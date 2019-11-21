@@ -19,7 +19,7 @@ POLICY
 
 resource "aws_iam_role_policy" "clean_old_ami" {
   name = "${var.prefix}_clean_old_ami"
-  role = "${aws_iam_role.clean_old_ami.id}"
+  role =  aws_iam_role.clean_old_ami.id
   policy = <<POLICY
 {
     "Version": "2012-10-17",
@@ -39,7 +39,7 @@ POLICY
 
 resource "aws_iam_role_policy" "allowcloudwatchlogging" {
   name = "${var.prefix}_Enable_login"
-  role = "${aws_iam_role.clean_old_ami.id}"
+  role = aws_iam_role.clean_old_ami.id
   policy = <<POLICY
 {
   "Version": "2012-10-17",
@@ -59,7 +59,7 @@ POLICY
 }
 
 resource "aws_iam_role_policy_attachment" "clean_old_ami" {
-    role = "${aws_iam_role.clean_old_ami.id}"
+    role = aws_iam_role.clean_old_ami.id
     policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess"
 }
 
@@ -69,9 +69,9 @@ resource "aws_iam_role_policy_attachment" "clean_old_ami" {
 variable "filename" {  default = "package" }
 resource "aws_lambda_function" "clean_old_ami" {
   filename         = "${path.module}/${var.filename}.zip"
-  source_code_hash = "${base64sha256(file("${path.module}/${var.filename}.zip"))}"
+  source_code_hash = filebase64sha256("${path.module}/${var.filename}.zip")
   function_name    = "${var.prefix}_clean_old_ami"
-  role             = "${aws_iam_role.clean_old_ami.arn}"
+  role             = aws_iam_role.clean_old_ami.arn
   handler          = "${var.filename}.lambda_handler"
   runtime          = "python3.7"
   publish          = "true"
@@ -95,15 +95,15 @@ resource "aws_cloudwatch_event_rule" "clean_old_ami" {
 }
 
 resource "aws_cloudwatch_event_target" "clean_old_ami" {
-    rule = "${aws_cloudwatch_event_rule.clean_old_ami.name}"
+    rule = aws_cloudwatch_event_rule.clean_old_ami.name
     target_id = "${var.prefix}_clean_old_ami"
-    arn = "${aws_lambda_function.clean_old_ami.arn}"
+    arn = aws_lambda_function.clean_old_ami.arn
 }
 
 resource "aws_lambda_permission" "allow_cloudwatch_to_call_clean_old_ami" {
     statement_id = "AllowExecutionFromCloudWatch"
     action = "lambda:InvokeFunction"
-    function_name = "${aws_lambda_function.clean_old_ami.function_name}"
+    function_name = aws_lambda_function.clean_old_ami.function_name
     principal = "events.amazonaws.com"
-    source_arn = "${aws_cloudwatch_event_rule.clean_old_ami.arn}"
+    source_arn = aws_cloudwatch_event_rule.clean_old_ami.arn
 }
