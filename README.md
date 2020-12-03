@@ -25,4 +25,4 @@ module "clean_old_ami" {
 Every first day of each month. 
 ![whenitruns](https://raw.githubusercontent.com/giuseppeborgese/terraform-aws-clean-old-ami/master/cronexpression.png)
 
-# Compatible with TF-0.12
+# Compatible with TF-0.13
