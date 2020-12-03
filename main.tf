@@ -81,9 +81,9 @@ resource "aws_lambda_function" "clean_old_ami" {
 
   environment {
     variables = {
-      TAG_FILTER             = "${var.tag_filter}"
-      DELETE_OLDER_THAN_DAYS = "${var.delete_older_than_days}"
-      EXCLUSION_TAG          = "${var.exclusion_tag}"
+      TAG_FILTER             = var.tag_filter
+      DELETE_OLDER_THAN_DAYS = var.delete_older_than_days
+      EXCLUSION_TAG          = var.exclusion_tag
     }
   }
 }
